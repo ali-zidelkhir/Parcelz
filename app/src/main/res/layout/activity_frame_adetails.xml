@@ -1,0 +1,188 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/app"
+    android:orientation="vertical"
+    tools:viewBindingIgnore="true"
+    tools:context=".Frame_A_Details">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="100dp"
+        android:layout_marginTop="0dp"
+        android:background="@color/app">
+
+        <com.shuhart.stepview.StepView
+            android:id="@+id/spb"
+            android:layout_marginBottom="10dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:padding="10dp"
+            app:sv_animationType="Line"
+            app:sv_doneCircleColor="@color/green"
+            app:sv_doneCircleRadius="20dp"
+            app:sv_doneStepLineColor="@color/green"
+            app:sv_doneTextColor="@color/green"
+            app:sv_nextStepCircleColor="@color/grey"
+            app:sv_nextStepLineColor="@color/grey"
+            app:sv_nextTextColor="@color/grey"
+            app:sv_selectedCircleRadius="20dp"
+            app:sv_stepLineWidth="1dp"
+            app:sv_stepNumberTextSize="30dp"
+            app:sv_stepsNumber="3" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@drawable/border_layout"
+        android:gravity="bottom"
+        android:orientation="vertical">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="30dp"
+            android:layout_marginTop="20dp"
+            android:layout_marginRight="20dp"
+            android:layout_marginBottom="10dp"
+            android:layout_weight="0"
+            android:fontFamily="@font/tajawal_bold"
+            android:text="Send your parcel easily"
+            android:textAlignment="center"
+            android:textAllCaps="true"
+            android:textColor="@color/app"
+            android:textSize="20sp" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="30dp"
+            android:layout_marginRight="20dp"
+            android:layout_weight="0"
+            android:fontFamily="@font/tajawal_bold"
+            android:text="Title your parcel"
+            android:textColor="@color/dark_grey"
+            android:textSize="20sp" />
+
+        <EditText
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="20dp"
+            android:background="@drawable/border_edittext"
+            android:hint="Title here.."
+            android:textAlignment="center"
+            android:textSize="20sp" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="30dp"
+            android:layout_marginTop="5dp"
+            android:layout_marginRight="20dp"
+            android:layout_weight="0"
+            android:fontFamily="@font/tajawal_bold"
+            android:text="Size it (cm)"
+            android:textColor="@color/dark_grey"
+            android:textSize="20sp" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <EditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="20dp"
+                android:layout_marginRight="20dp"
+                android:layout_weight="1"
+                android:background="@drawable/border_edittext"
+                android:hint="H"
+                android:textAlignment="center"
+                android:textSize="20sp" />
+
+            <EditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="20dp"
+                android:layout_marginRight="20dp"
+                android:layout_weight="1"
+                android:background="@drawable/border_edittext"
+                android:hint="W"
+                android:textAlignment="center"
+                android:textSize="20sp" />
+
+            <EditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="20dp"
+                android:layout_marginRight="20dp"
+                android:layout_weight="1"
+                android:background="@drawable/border_edittext"
+                android:hint="L"
+                android:textAlignment="center"
+                android:textSize="20sp" />
+        </LinearLayout>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="30dp"
+            android:layout_marginRight="20dp"
+            android:layout_weight="0"
+            android:fontFamily="@font/tajawal_bold"
+            android:text="Type of parcel"
+            android:textColor="@color/dark_grey"
+            android:textSize="20sp" />
+
+        <Spinner
+            android:id="@+id/spinner"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="20dp"
+            android:background="@drawable/border_edittext" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="30dp"
+            android:layout_marginRight="20dp"
+            android:layout_weight="0"
+            android:fontFamily="@font/tajawal_bold"
+            android:text="Description"
+            android:textColor="@color/dark_grey"
+            android:textSize="20sp" />
+
+        <EditText
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="20dp"
+            android:layout_marginBottom="10dp"
+            android:layout_weight="1"
+            android:background="@drawable/border_edittext"
+            android:hint="Describe here.."
+            android:textAlignment="center"
+            android:textSize="20sp" />
+
+        <Button
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="0dp"
+            android:layout_weight="0"
+            android:onClick="Next"
+            android:background="@drawable/btn_frame1"
+            android:fontFamily="@font/tajawal_black"
+            android:text="Continue"
+            android:textAllCaps="false"
+            android:textSize="30sp" />
+
+    </LinearLayout>
+</LinearLayout>

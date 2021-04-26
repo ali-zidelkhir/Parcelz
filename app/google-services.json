@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "360389485322",
+    "project_id": "parselz",
+    "storage_bucket": "parselz.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:360389485322:android:4a9ba9b30270ab878b90f3",
+        "android_client_info": {
+          "package_name": "com.example.parcelz"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "360389485322-66iici1440cmsuqn2dblchmle23cnmge.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAWrK9EIoKA4VE49a6U-K1GKX48-34hKLM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "360389485322-66iici1440cmsuqn2dblchmle23cnmge.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

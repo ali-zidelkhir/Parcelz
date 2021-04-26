@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/grey"
+    tools:context=".MainFrame">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="250dp"
+        android:orientation="horizontal"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:ignore="MissingConstraints">
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_margin="10dp"
+            android:outlineAmbientShadowColor="@color/black"
+            android:layout_weight="1">
+
+            <ImageButton
+                android:id="@+id/button_x"
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:scaleType="fitCenter"
+                android:padding="40dp"
+                android:background="@drawable/btn_bg_selector"
+                android:src="@drawable/icons8_track_order_48px"></ImageButton>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom"
+                android:textAlignment="center"
+                android:layout_marginBottom="20dp"
+                android:clickable="false"
+                android:textSize="25sp"
+                android:text="Track Parcel"
+                tools:ignore="RtlCompat"></TextView>
+        </FrameLayout>
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_margin="10dp"
+            android:outlineAmbientShadowColor="@color/black"
+            android:layout_weight="1">
+
+            <ImageButton
+                android:id="@+id/button_y"
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:scaleType="fitCenter"
+                android:padding="40dp"
+                android:onClick="TEST"
+                android:background="@drawable/btn_bg_selector"
+                android:src="@drawable/icons8_package_48px"></ImageButton>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom"
+                android:textAlignment="center"
+                android:layout_marginBottom="20dp"
+                android:clickable="false"
+                android:textSize="25sp"
+                android:text="Send Parcel"
+                tools:ignore="RtlCompat"></TextView>
+        </FrameLayout>
+
+
+    </LinearLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>
