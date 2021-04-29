@@ -7,6 +7,8 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Toast;
 
+import com.example.parcelz.Send.Frame_A_Details;
+
 public class MainFrame extends AppCompatActivity {
 
     @Override

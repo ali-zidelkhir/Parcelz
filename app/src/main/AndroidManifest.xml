@@ -1,6 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.example.parcelz">
+    package="com.example.parcelz"
+    xmlns:dist="http://schemas.android.com/apk/distribution">
+
+    <dist:module dist:instant="true" />
+
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.INTERNET" />
+
+    <uses-feature
+        android:glEsVersion="0x00020000"
+        android:required="true" />
 
     <application
         android:allowBackup="true"
@@ -9,8 +21,14 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.Parcelz">
-        <activity android:name=".Frame_A_Details"></activity>
-        <activity android:name=".MainFrame" >
+        <meta-data
+            android:name="com.google.android.gms.version"
+            android:value="@integer/google_play_services_version" />
+        <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value="AIzaSyA1gDTEmZVWRxZFn3qorNfQY31_abN-VIU" />
+
+        <activity android:name=".MainFrame">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -18,7 +36,9 @@
             </intent-filter>
         </activity>
         <activity android:name=".OTP" />
-        <activity android:name=".MainActivity"/>
+        <activity android:name=".MainActivity" />
+        <activity android:name=".Send.Frame_B_Details" />
+        <activity android:name=".Send.Frame_A_Details" />
     </application>
 
 </manifest>

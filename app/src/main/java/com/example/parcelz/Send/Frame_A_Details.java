@@ -1,17 +1,18 @@
-package com.example.parcelz;
+package com.example.parcelz.Send;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Spinner;
-import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.parcelz.databinding.ActivityMainBinding;
+import com.example.parcelz.MainFrame;
+import com.example.parcelz.R;
 import com.shuhart.stepview.StepView;
 
 import java.util.Arrays;
@@ -76,6 +77,9 @@ public class Frame_A_Details extends AppCompatActivity {
                                 public void run() {
                                     stepIndex++;
                                     stepView.go(stepIndex, true);
+                                    Intent mainI = new Intent(Frame_A_Details.this, Frame_B_Details.class);
+                                    startActivity(mainI);
+                                    finish();
                                 }
                             }, 3000
         );

@@ -7,7 +7,7 @@
     android:background="@color/app"
     android:orientation="vertical"
     tools:viewBindingIgnore="true"
-    tools:context=".Frame_A_Details">
+    tools:context="com.example.parcelz.Send.Frame_A_Details">
 
     <LinearLayout
         android:layout_width="match_parent"
