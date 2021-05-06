@@ -34,22 +34,31 @@ public class Frame_B_Details extends AppCompatActivity {
     FusedLocationProviderClient client;
     StepView stepView;
     int PLACE_PICKER_REQUEST = 111;
-    int stepIndex = 2;
-
+    int stepIndex = 1;
+    String Key="";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_frame_bdetails);
+        Key=getIntent().getStringExtra("Key");
 
         //assign variable
         stepView = findViewById(R.id.spb);
         mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.google_map);
+        final Handler handler = new Handler();
+        handler.postDelayed(new Runnable() {
+                                @Override
+                                public void run() {
+                                    stepView.go(1, false);
+                                }
+                            }, 0
+        );
 
         //initialize fused
         client = LocationServices.getFusedLocationProviderClient(Frame_B_Details.this);
 
-        //check permission
+        //check permission GPS Activation
         if (ActivityCompat.checkSelfPermission(Frame_B_Details.this,
                 Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
             getCurrentLocation();
@@ -78,6 +87,7 @@ public class Frame_B_Details extends AppCompatActivity {
                         @Override
                         public void onMapReady(@NonNull @NotNull GoogleMap googleMap) {
                             //initialize LATLNG
+                            googleMap.clear();
                             LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
                             //create marker option
                             MarkerOptions options = new MarkerOptions().position(latLng).title("I am Here");
@@ -94,6 +104,7 @@ public class Frame_B_Details extends AppCompatActivity {
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull @NotNull String[] permissions, @NonNull @NotNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         if (requestCode == PLACE_PICKER_REQUEST) {
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 getCurrentLocation();
@@ -110,7 +121,7 @@ public class Frame_B_Details extends AppCompatActivity {
                                 public void run() {
                                     stepIndex++;
                                     stepView.go(stepIndex, true);
-                                    Intent mainI = new Intent(Frame_B_Details.this, Frame_B_Details.class);
+                                    Intent mainI = new Intent(Frame_B_Details.this, Frame_C_Details.class);
                                     startActivity(mainI);
                                     finish();
                                 }
