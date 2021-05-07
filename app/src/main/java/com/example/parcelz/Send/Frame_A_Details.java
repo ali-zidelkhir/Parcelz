@@ -78,11 +78,7 @@ public class Frame_A_Details extends AppCompatActivity {
         j_spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                Toast.makeText(
-                        Frame_A_Details.this,
-                        j_spinner.getSelectedItem().toString(),
-                        Toast.LENGTH_SHORT
-                ).show();
+                 //action here
             }
 
             @Override
@@ -121,11 +117,11 @@ public class Frame_A_Details extends AppCompatActivity {
             public void onDataChange(DataSnapshot dataSnapshot) {
                 for (DataSnapshot childSnapshot : dataSnapshot.getChildren()) {
                     Key = (childSnapshot.getKey());
-                    Toast.makeText(
+                   /* Toast.makeText(
                             Frame_A_Details.this,
                             "KEY :" + childSnapshot.getKey(),
                             Toast.LENGTH_LONG
-                    ).show();
+                    ).show();*/
                 }
             }
 
