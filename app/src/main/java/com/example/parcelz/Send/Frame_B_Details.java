@@ -142,11 +142,11 @@ public class Frame_B_Details extends AppCompatActivity implements OnMapReadyCall
         getDeviceLocation();
         getLocation();
         map.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(Lat,Lang), 14));
-        CameraPosition cameraPosition = new CameraPosition.Builder()
+        /*CameraPosition cameraPosition = new CameraPosition.Builder()
                 .target(Lat,Lang)
                 .zoom(20)
-                .build();
-         map.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition))
+                .build();*/
+         map.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
 
         // Use a custom info window adapter to handle multiple lines of text in the
         // info window contents.
