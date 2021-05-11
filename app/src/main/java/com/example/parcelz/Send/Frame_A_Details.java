@@ -14,9 +14,12 @@ import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.Toast;
 
+import com.example.parcelz.MainActivity;
 import com.example.parcelz.MainFrame;
 import com.example.parcelz.Models.DetailsFrameA;
 import com.example.parcelz.R;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -31,7 +34,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.Arrays;
 
 public class Frame_A_Details extends AppCompatActivity {
-
+    private FirebaseAuth mAuth;
     StepView stepView;
     int stepIndex = 0;
     String[] stepsText = {"Pass 1", "Pass 2", "Pass 3"};
@@ -46,6 +49,14 @@ public class Frame_A_Details extends AppCompatActivity {
     final FirebaseDatabase database = FirebaseDatabase.getInstance();
     DatabaseReference databaseReference;
     String Key = "";
+    String UID = "";
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        FirebaseUser currentFirebaseUser = FirebaseAuth.getInstance().getCurrentUser();
+        UID = currentFirebaseUser.getUid();
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -67,7 +78,7 @@ public class Frame_A_Details extends AppCompatActivity {
                 .commit();
         stepView.setSteps(Arrays.asList(description));
 
-        //***********************************************edit spinner
+        //*********************************************** edit spinner
         ArrayAdapter<String> adapter = new ArrayAdapter<>(
                 this,
                 android.R.layout.simple_spinner_item,
@@ -78,7 +89,7 @@ public class Frame_A_Details extends AppCompatActivity {
         j_spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                 //action here
+                //action here
             }
 
             @Override
@@ -100,6 +111,7 @@ public class Frame_A_Details extends AppCompatActivity {
         String LT = L.getText().toString();
         String TypeT = j_spinner.getSelectedItem().toString();
         String DescriptionT = Description.getText().toString();
+
         //create Model Data
         DetailsFrameA ModelA = new DetailsFrameA(
                 TitleT,
@@ -107,29 +119,31 @@ public class Frame_A_Details extends AppCompatActivity {
                 WT,
                 LT,
                 TypeT,
-                DescriptionT);
-        databaseReference.push().setValue(ModelA);
+                DescriptionT,
+                0, 0, 0, 0,
+                UID
+        );
+        databaseReference.push().
+
+                setValue(ModelA);
 
         //get Last inserted Key
         Query query = databaseReference.orderByKey().limitToLast(1);
-        query.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                for (DataSnapshot childSnapshot : dataSnapshot.getChildren()) {
-                    Key = (childSnapshot.getKey());
-                   /* Toast.makeText(
-                            Frame_A_Details.this,
-                            "KEY :" + childSnapshot.getKey(),
-                            Toast.LENGTH_LONG
-                    ).show();*/
-                }
-            }
+        query.addListenerForSingleValueEvent(new
 
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-                throw databaseError.toException();
-            }
-        });
+                                                     ValueEventListener() {
+                                                         @Override
+                                                         public void onDataChange(DataSnapshot dataSnapshot) {
+                                                             for (DataSnapshot childSnapshot : dataSnapshot.getChildren()) {
+                                                                 Key = (childSnapshot.getKey());
+                                                             }
+                                                         }
+
+                                                         @Override
+                                                         public void onCancelled(DatabaseError databaseError) {
+                                                             throw databaseError.toException();
+                                                         }
+                                                     });
 
     }
 
@@ -141,10 +155,13 @@ public class Frame_A_Details extends AppCompatActivity {
                                     insertData();
                                     stepIndex++;
                                     stepView.go(stepIndex, true);
+
                                     Intent mainI = new Intent(Frame_A_Details.this, Frame_B_Details.class);
-                                    mainI.putExtra("Key", Key);
+                                    //mainI.putExtra("Key", Key);
                                     startActivity(mainI);
                                     finish();
+
+
                                 }
                             }, 2000
         );

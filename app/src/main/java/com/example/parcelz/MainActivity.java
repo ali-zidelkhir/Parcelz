@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
@@ -28,104 +29,45 @@ import java.util.concurrent.TimeUnit;
 
 public class MainActivity extends AppCompatActivity {
     private FirebaseAuth mAuth;
-    private PhoneAuthProvider.OnVerificationStateChangedCallbacks mCallbacks;
-     EditText editTextPhone;
-    String OTPID;
+    private FirebaseUser mCurrentUser;
 
-    @Override
-    protected void onStart() {
-        super.onStart();
-        FirebaseUser user = mAuth.getCurrentUser();
-        if (user != null) {
-            //get to main frame
-            Intent mainI = new Intent(MainActivity.this, MainFrame.class);
-            startActivity(mainI);
-            finish();
-        }
-    }
+    private Button mLogoutBtn;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mAuth = FirebaseAuth.getInstance();
-        editTextPhone =(EditText) findViewById(R.id.editTextPhone);
         setContentView(R.layout.activity_main);
-        mCallbacks = new PhoneAuthProvider.OnVerificationStateChangedCallbacks() {
+
+        mAuth = FirebaseAuth.getInstance();
+        mCurrentUser = mAuth.getCurrentUser();
+
+        mLogoutBtn = findViewById(R.id.logout_btn);
+
+        mLogoutBtn.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onVerificationCompleted(@NonNull @NotNull PhoneAuthCredential phoneAuthCredential) {
-SignIn(phoneAuthCredential);
-            }
+            public void onClick(View v) {
 
-            @Override
-            public void onVerificationFailed(@NonNull @NotNull FirebaseException e) {
+                mAuth.signOut();
+                sendUserToLogin();
 
-            }
-
-            @Override
-            public void onCodeSent(@NonNull @NotNull String s, @NonNull @NotNull PhoneAuthProvider.ForceResendingToken forceResendingToken) {
-                super.onCodeSent(s, forceResendingToken);
-                new Handler().postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        Intent OTP = new Intent(MainActivity.this, OTP.class);
-                        OTP.putExtra("auth", s);
-                        startActivity(OTP);
-                    }
-                }, 10000);
-
-
-
-            }
-
-
-        };
-    }
-
-    public void RegisterPhone(View view) {
-        //String Phone = (String) editTextPhone.getText().toString();
-        PhoneAuthOptions options =
-                PhoneAuthOptions.newBuilder(mAuth)
-                        .setPhoneNumber("+213558513584")       // Phone number to verify
-                        .setTimeout(60L, TimeUnit.SECONDS) // Timeout and unit
-                        .setActivity(MainActivity.this)                 // Activity (for callback binding)
-                        .setCallbacks(mCallbacks)          // OnVerificationStateChangedCallbacks
-                        .build();
-        PhoneAuthProvider.verifyPhoneNumber(options);
-    }
-
-
-    private void SignIn(PhoneAuthCredential phoneAuthCredential){
-        mAuth.signInWithCredential(phoneAuthCredential).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
-            @Override
-            public void onComplete(@NonNull @NotNull Task<AuthResult> task) {
-                if(task.isSuccessful()){
-                    Intent mainI = new Intent(MainActivity.this, MainFrame.class);
-                    startActivity(mainI);
-                    finish();
-                }else{
-
-                }
             }
         });
+
     }
-    private void signInWithPhoneAuthCredential(PhoneAuthCredential credential) {
-        mAuth.signInWithCredential(credential)
-                .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
-                    @Override
-                    public void onComplete(@NonNull Task<AuthResult> task) {
-                        if (task.isSuccessful()) {
-                            Toast.makeText(getApplicationContext(), "Sign OK", Toast.LENGTH_LONG).show();
-                            startActivity(new Intent(MainActivity.this, OTP.class));
-                            finish();
-                        } else {
-                            Toast.makeText(getApplicationContext(), "Sign ERROR", Toast.LENGTH_LONG).show();
-                            // Sign in failed, display a message and update the UI
-                            Log.w("TAG", "signInWithCredential:failure", task.getException());
-                            if (task.getException() instanceof FirebaseAuthInvalidCredentialsException) {
-                                // The verification code entered was invalid
-                            }
-                        }
-                    }
-                });
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        if (mCurrentUser == null) {
+            sendUserToLogin();
+        }
+    }
+
+    private void sendUserToLogin() {
+        Intent loginIntent = new Intent(MainActivity.this, LoginActivity.class);
+        loginIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        loginIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        startActivity(loginIntent);
+        finish();
     }
 }

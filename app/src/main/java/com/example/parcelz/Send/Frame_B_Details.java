@@ -27,6 +27,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.parcelz.Models.DetailsFrameA;
 import com.example.parcelz.R;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
@@ -41,12 +42,20 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
+import com.google.firebase.database.ValueEventListener;
 import com.shuhart.stepview.StepView;
 
 import org.jetbrains.annotations.NotNull;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 public class Frame_B_Details extends AppCompatActivity implements OnMapReadyCallback, LocationListener {
 
@@ -62,7 +71,7 @@ public class Frame_B_Details extends AppCompatActivity implements OnMapReadyCall
     // A default location (Sydney, Australia) and default zoom to use when location permission is
     // not granted.
     private final LatLng defaultLocation = new LatLng(-33.8523341, 151.2106085);
-    private static final int DEFAULT_ZOOM = 15;
+    private static final int DEFAULT_ZOOM = 10;
     private static final int PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 1;
     private boolean locationPermissionGranted;
 
@@ -82,16 +91,16 @@ public class Frame_B_Details extends AppCompatActivity implements OnMapReadyCall
     private LatLng[] likelyPlaceLatLngs;
     StepView stepView;
     int stepIndex = 0;
+    //DB Real Time Database
+    final FirebaseDatabase database = FirebaseDatabase.getInstance();
+    DatabaseReference databaseReference;
+    String Key = "";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_frame_bdetails);
         stepView = findViewById(R.id.spb);
-        // Retrieve location and camera position from saved instance state.
-        if (savedInstanceState != null) {
-            lastKnownLocation = savedInstanceState.getParcelable(KEY_LOCATION);
-            cameraPosition = savedInstanceState.getParcelable(KEY_CAMERA_POSITION);
-        }
         final Handler handler = new Handler();
         handler.postDelayed(new Runnable() {
                                 @Override
@@ -100,8 +109,12 @@ public class Frame_B_Details extends AppCompatActivity implements OnMapReadyCall
                                 }
                             }, 0
         );
-        // Retrieve the content view that renders the map.
 
+        // Retrieve location and camera position from saved instance state.
+        if (savedInstanceState != null) {
+            lastKnownLocation = savedInstanceState.getParcelable(KEY_LOCATION);
+            cameraPosition = savedInstanceState.getParcelable(KEY_CAMERA_POSITION);
+        }
 
         // Construct a FusedLocationProviderClient.
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
@@ -110,16 +123,36 @@ public class Frame_B_Details extends AppCompatActivity implements OnMapReadyCall
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.google_map);
         mapFragment.getMapAsync(this);
-// Construct a PlacesClient
 
         // Construct a FusedLocationProviderClient.
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
 
+        //get Last inserted Key
+        databaseReference = FirebaseDatabase.getInstance().getReference().child("Send_Details_A");
+        Query query = databaseReference.orderByKey().limitToLast(1);
+        query.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                for (DataSnapshot childSnapshot : dataSnapshot.getChildren()) {
+                    Key = (childSnapshot.getKey());
+
+                    Toast.makeText(
+                            Frame_B_Details.this,
+                            "MY A KEY :" + Key,
+                            Toast.LENGTH_LONG
+                    ).show();
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                throw databaseError.toException();
+            }
+        });
+
     }
 
-    /**
-     * Saves the state of the map when the activity is paused.
-     */
+
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         if (map != null) {
@@ -129,11 +162,7 @@ public class Frame_B_Details extends AppCompatActivity implements OnMapReadyCall
         super.onSaveInstanceState(outState);
     }
 
-
-    /**
-     * Manipulates the map when it's available.
-     * This callback is triggered when the map is ready to be used.
-     */
+    @SuppressLint("MissingPermission")
     @Override
     public void onMapReady(GoogleMap map) {
         this.map = map;
@@ -141,17 +170,10 @@ public class Frame_B_Details extends AppCompatActivity implements OnMapReadyCall
         updateLocationUI();
         getDeviceLocation();
         getLocation();
-        map.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(Lat,Lang), 14));
-        /*CameraPosition cameraPosition = new CameraPosition.Builder()
-                .target(Lat,Lang)
-                .zoom(20)
-                .build();*/
-         map.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
+        showCurrentPlace();
+        map.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(Lat, Lang), 15));
 
-        // Use a custom info window adapter to handle multiple lines of text in the
-        // info window contents.
         this.map.setInfoWindowAdapter(new GoogleMap.InfoWindowAdapter() {
-
             @Override
             public View getInfoWindow(Marker marker) {
                 return null;
@@ -162,10 +184,8 @@ public class Frame_B_Details extends AppCompatActivity implements OnMapReadyCall
                 // Inflate the layouts for the info window, title and snippet.
                 View infoWindow = getLayoutInflater().inflate(R.layout.activity_frame_cdetails,
                         (FrameLayout) findViewById(R.id.google_map), false);
-
                 TextView title = infoWindow.findViewById(R.id.title);
                 title.setText(marker.getTitle());
-
                 return infoWindow;
             }
         });
@@ -174,25 +194,12 @@ public class Frame_B_Details extends AppCompatActivity implements OnMapReadyCall
                 .position(sydney)
                 .title("Marker in Sydney"));
         map.moveCamera(CameraUpdateFactory.newLatLng(sydney));
-        // Prompt the user for permission.
-
+        map.setMyLocationEnabled(true);
         map.animateCamera(CameraUpdateFactory.zoomIn());
         map.animateCamera(CameraUpdateFactory.zoomOut());
-        // Turn on the My Location layer and the related control on the map.
-        //updateLocationUI();
-
-        // Get the current location of the device and set the position of the map.
-        //getDeviceLocation();
     }
 
-    /**
-     * Gets the current location of the device, and positions the map's camera.
-     */
     private void getDeviceLocation() {
-        /*
-         * Get the best and most recent location of the device, which may be null in rare
-         * cases when a location is not available.
-         */
         try {
             if (locationPermissionGranted) {
                 Task<Location> locationResult = fusedLocationProviderClient.getLastLocation();
@@ -205,14 +212,14 @@ public class Frame_B_Details extends AppCompatActivity implements OnMapReadyCall
                             if (lastKnownLocation != null) {
                                 map.moveCamera(CameraUpdateFactory.newLatLngZoom(
                                         new LatLng(lastKnownLocation.getLatitude(),
-                                                lastKnownLocation.getLongitude()), DEFAULT_ZOOM));
+                                                lastKnownLocation.getLongitude()), 15));
                             }
                         } else {
                             Log.d(TAG, "Current location is null. Using defaults.");
                             Log.e(TAG, "Exception: %s", task.getException());
                             map.moveCamera(CameraUpdateFactory
                                     .newLatLngZoom(defaultLocation, DEFAULT_ZOOM));
-                            map.getUiSettings().setMyLocationButtonEnabled(false);
+                            map.getUiSettings().setMyLocationButtonEnabled(true);
                         }
                     }
                 });
@@ -222,15 +229,7 @@ public class Frame_B_Details extends AppCompatActivity implements OnMapReadyCall
         }
     }
 
-    /**
-     * Prompts the user for permission to use the device location.
-     */
     private void getLocationPermission() {
-        /*
-         * Request location permission, so that we can get the location of the
-         * device. The result of the permission request is handled by a callback,
-         * onRequestPermissionsResult.
-         */
         if (ContextCompat.checkSelfPermission(this.getApplicationContext(),
                 android.Manifest.permission.ACCESS_FINE_LOCATION)
                 == PackageManager.PERMISSION_GRANTED) {
@@ -242,13 +241,8 @@ public class Frame_B_Details extends AppCompatActivity implements OnMapReadyCall
         }
     }
 
-    /**
-     * Handles the result of the request for location permissions.
-     */
     @Override
-    public void onRequestPermissionsResult(int requestCode,
-                                           @NonNull String[] permissions,
-                                           @NonNull int[] grantResults) {
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         locationPermissionGranted = false;
         switch (requestCode) {
@@ -263,10 +257,6 @@ public class Frame_B_Details extends AppCompatActivity implements OnMapReadyCall
         updateLocationUI();
     }
 
-    /**
-     * Prompts the user to select the current place from a list of likely places, and shows the
-     * current place on the map - provided the user has granted location permission.
-     */
     private void showCurrentPlace() {
         if (map == null) {
             return;
@@ -290,9 +280,6 @@ public class Frame_B_Details extends AppCompatActivity implements OnMapReadyCall
         }
     }
 
-    /**
-     * Displays a form allowing the user to select a place from a list of likely places.
-     */
     private void openPlacesDialog() {
         // Ask the user to choose the place where they are now.
         DialogInterface.OnClickListener listener = new DialogInterface.OnClickListener() {
@@ -325,9 +312,7 @@ public class Frame_B_Details extends AppCompatActivity implements OnMapReadyCall
                 .show();
     }
 
-    /**
-     * Updates the map's UI settings based on whether the user has granted location permission.
-     */
+
     private void updateLocationUI() {
         if (map == null) {
             return;
@@ -353,24 +338,24 @@ public class Frame_B_Details extends AppCompatActivity implements OnMapReadyCall
                                 @Override
                                 public void run() {
                                     getLocation();
+                                    insertData();
                                     stepIndex++;
                                     stepView.go(stepIndex, true);
                                     Intent mainI = new Intent(Frame_B_Details.this, Frame_C_Details.class);
-
                                     startActivity(mainI);
                                     finish();
                                 }
                             }, 2000
         );
     }
-double Lat, Lang;
+
+    double Lat, Lang;
+
     @SuppressLint("MissingPermission")
     private void getLocation() {
-
         try {
             locationManager = (LocationManager) getApplicationContext().getSystemService(LOCATION_SERVICE);
             locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 5000, 5, Frame_B_Details.this);
-
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -379,8 +364,8 @@ double Lat, Lang;
     @Override
     public void onLocationChanged(Location location) {
         Toast.makeText(this, "" + location.getLatitude() + "," + location.getLongitude(), Toast.LENGTH_SHORT).show();
-        Lat=location.getLatitude();
-        Lang=location.getLongitude();
+        Lat = location.getLatitude();
+        Lang = location.getLongitude();
         try {
             Geocoder geocoder = new Geocoder(Frame_B_Details.this, Locale.getDefault());
             List<Address> addresses = geocoder.getFromLocation(location.getLatitude(), location.getLongitude(), 1);
@@ -389,5 +374,22 @@ double Lat, Lang;
             e.printStackTrace();
         }
 
+    }
+
+    private void updateLocation() {
+        DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference();
+        rootRef.child("Send_Details_A")
+                .child(Key)
+                .child("latitude")
+                .setValue(Lat);
+        rootRef.child("Send_Details_A")
+                .child(Key)
+                .child("longitude")
+                .setValue(Lang);
+        Toast.makeText(Frame_B_Details.this, "Update LATLANG AVEC Success", Toast.LENGTH_SHORT).show();
+    }
+
+    public void insertData() {
+        updateLocation();
     }
 }

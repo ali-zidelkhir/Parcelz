@@ -8,6 +8,7 @@
     <color name="black">#FF000000</color>
     <color name="green">#98FB98 </color>
     <color name="grey">#F9F9F9</color>
+    <color name="red">#FF1122</color>
     <color name="dark_grey">#646464</color>
     <color name="app">#A4358E</color>
     <color name="yellow">#FFF700</color>

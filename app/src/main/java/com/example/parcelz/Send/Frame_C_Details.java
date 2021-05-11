@@ -1,6 +1,7 @@
 package com.example.parcelz.Send;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
@@ -9,8 +10,11 @@ import androidx.fragment.app.FragmentActivity;
 
 import android.Manifest;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.IntentSender;
 import android.content.pm.PackageManager;
+import android.location.Address;
+import android.location.Geocoder;
 import android.location.Location;
 import android.location.LocationListener;
 import android.os.Bundle;
@@ -20,6 +24,7 @@ import android.view.Menu;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.parcelz.R;
 import com.google.android.gms.common.ConnectionResult;
@@ -37,6 +42,12 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
+import com.google.firebase.database.ValueEventListener;
 import com.shuhart.stepview.StepView;
 
 import java.util.List;
@@ -44,11 +55,13 @@ import java.util.List;
 
 public class Frame_C_Details extends AppCompatActivity
         implements OnMapReadyCallback {
-
+    String Key = "";
     private static final String TAG = Frame_C_Details.class.getSimpleName();
     private GoogleMap map;
     private CameraPosition cameraPosition;
-
+    DatabaseReference databaseReference;
+    final FirebaseDatabase database = FirebaseDatabase.getInstance();
+    Geocoder geocoder;
 
     // The entry point to the Fused Location Provider.
     private FusedLocationProviderClient fusedLocationProviderClient;
@@ -63,7 +76,7 @@ public class Frame_C_Details extends AppCompatActivity
     // The geographical location where the device is currently located. That is, the last-known
     // location retrieved by the Fused Location Provider.
     private Location lastKnownLocation;
-
+    double Lat, Lang;
     // Keys for storing activity state.
     private static final String KEY_CAMERA_POSITION = "camera_position";
     private static final String KEY_LOCATION = "location";
@@ -75,6 +88,7 @@ public class Frame_C_Details extends AppCompatActivity
     private List[] likelyPlaceAttributions;
     private LatLng[] likelyPlaceLatLngs;
     StepView stepView;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -107,7 +121,22 @@ public class Frame_C_Details extends AppCompatActivity
 
         // Construct a FusedLocationProviderClient.
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
+//get Last inserted Key
+        databaseReference = FirebaseDatabase.getInstance().getReference().child("Send_Details_A");
+        Query query = databaseReference.orderByKey().limitToLast(1);
+        query.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                for (DataSnapshot childSnapshot : dataSnapshot.getChildren()) {
+                    Key = (childSnapshot.getKey());
+                }
+            }
 
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                throw databaseError.toException();
+            }
+        });
     }
 
     /**
@@ -135,7 +164,7 @@ public class Frame_C_Details extends AppCompatActivity
         getDeviceLocation();
         // Use a custom info window adapter to handle multiple lines of text in the
         // info window contents.
-        this.map.setInfoWindowAdapter(new GoogleMap.InfoWindowAdapter() {
+       /* this.map.setInfoWindowAdapter(new GoogleMap.InfoWindowAdapter() {
 
             @Override
             public View getInfoWindow(Marker marker) {
@@ -153,21 +182,45 @@ public class Frame_C_Details extends AppCompatActivity
 
                 return infoWindow;
             }
-        });
+        });*/
         LatLng sydney = new LatLng(-33.852, 151.211);
         map.addMarker(new MarkerOptions()
                 .position(sydney)
                 .title("Marker in Sydney"));
         map.moveCamera(CameraUpdateFactory.newLatLng(sydney));
         // Prompt the user for permission.
-
         map.animateCamera(CameraUpdateFactory.zoomIn());
         map.animateCamera(CameraUpdateFactory.zoomOut());
-        // Turn on the My Location layer and the related control on the map.
-        //updateLocationUI();
+        try {
+            map.moveCamera(CameraUpdateFactory.newLatLngZoom(
+                    new LatLng(lastKnownLocation.getLatitude(),
+                            lastKnownLocation.getLongitude()), DEFAULT_ZOOM));
+        } catch (Exception e) {
 
-        // Get the current location of the device and set the position of the map.
-        //getDeviceLocation();
+        }
+        map.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
+            @Override
+            public void onMapClick(LatLng latLng) {
+                MarkerOptions markerOptions = new MarkerOptions();
+                markerOptions.position(latLng);
+                //markerOptions.title(latLng.latitude + " : " + latLng.longitude);
+                map.clear();
+                map.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 10));
+                map.addMarker(markerOptions);
+                try {
+                    List<Address> addresses = geocoder.getFromLocation(latLng.latitude, latLng.longitude, 1);
+                    if (addresses.size() > 0) {
+                        Address address = addresses.get(0);
+                        String StreetAddress = address.getAddressLine(0);
+                        map.addMarker(new MarkerOptions().position(latLng).title(StreetAddress));
+                    }
+                } catch (Exception r) {
+
+                }
+
+
+            }
+        });
     }
 
     /**
@@ -247,6 +300,7 @@ public class Frame_C_Details extends AppCompatActivity
         }
         updateLocationUI();
     }
+
 
     /**
      * Prompts the user to select the current place from a list of likely places, and shows the
@@ -330,5 +384,21 @@ public class Frame_C_Details extends AppCompatActivity
         } catch (SecurityException e) {
             Log.e("Exception: %s", e.getMessage());
         }
+    }
+
+    private void updateLocation() {
+        DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference();
+        rootRef.child("Send_Details_A")
+                .child(Key)
+                .child("latitude")
+                .setValue(Lat);
+        rootRef.child("Send_Details_A")
+                .child(Key)
+                .child("longitude")
+                .setValue(Lang);
+        Toast.makeText(Frame_C_Details.this, "Update LATLANG AVEC Success", Toast.LENGTH_SHORT).show();
+    }
+
+    public void Next(View view) {
     }
 }

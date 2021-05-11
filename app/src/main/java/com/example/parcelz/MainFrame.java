@@ -18,7 +18,6 @@ public class MainFrame extends AppCompatActivity {
     }
 
     public void TEST(View view) {
-        Toast.makeText(MainFrame.this, "HHHHIIII ", Toast.LENGTH_LONG).show();
         Intent mainI = new Intent(MainFrame.this, Frame_A_Details.class);
         startActivity(mainI);
         finish();
