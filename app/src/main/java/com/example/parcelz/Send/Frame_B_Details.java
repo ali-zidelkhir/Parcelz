@@ -342,6 +342,8 @@ public class Frame_B_Details extends AppCompatActivity implements OnMapReadyCall
                                     stepIndex++;
                                     stepView.go(stepIndex, true);
                                     Intent mainI = new Intent(Frame_B_Details.this, Frame_C_Details.class);
+                                    mainI.putExtra("LATT", Lat);
+                                    mainI.putExtra("LONGG", Lang);
                                     startActivity(mainI);
                                     finish();
                                 }

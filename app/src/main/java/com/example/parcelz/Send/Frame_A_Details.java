@@ -121,7 +121,7 @@ public class Frame_A_Details extends AppCompatActivity {
                 TypeT,
                 DescriptionT,
                 0, 0, 0, 0,
-                UID
+                UID, "A", "B"
         );
         databaseReference.push().
 

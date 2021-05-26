@@ -20,11 +20,16 @@ import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.PhoneAuthCredential;
 import com.google.firebase.auth.PhoneAuthProvider;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+
+import org.jetbrains.annotations.NotNull;
 
 public class OTP extends AppCompatActivity {
 
     private FirebaseAuth mAuth;
     private FirebaseUser mCurrentUser;
+    private FirebaseAuth.AuthStateListener firebaseAuthListener;
 
     private String mAuthVerificationId;
 
@@ -43,6 +48,7 @@ public class OTP extends AppCompatActivity {
         mAuth = FirebaseAuth.getInstance();
         mCurrentUser = mAuth.getCurrentUser();
 
+
         mAuthVerificationId = getIntent().getStringExtra("AuthCredentials");
 
         mOtpFeedback = findViewById(R.id.otp_form_feedback);
@@ -57,7 +63,7 @@ public class OTP extends AppCompatActivity {
 
                 String otp = mOtpText.getText().toString();
 
-                if(otp.isEmpty()){
+                if (otp.isEmpty()) {
 
                     mOtpFeedback.setVisibility(View.VISIBLE);
                     mOtpFeedback.setText("Please fill in the form and try again.");
@@ -101,12 +107,22 @@ public class OTP extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
-        if(mCurrentUser != null){
+        if (mCurrentUser != null) {
             sendUserToHome();
         }
     }
 
     public void sendUserToHome() {
+        try {
+            String userID = mAuth.getCurrentUser().getUid();
+            DatabaseReference currentUser = FirebaseDatabase.getInstance().getReference().child("Users").child("Custumers").child(userID);
+            currentUser.setValue(true);
+        }catch (Exception e){
+            System.out.println(e.getMessage());
+        }
+
+
+
         Intent homeIntent = new Intent(OTP.this, MainFrame.class);
         homeIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         homeIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);

@@ -22,11 +22,14 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.Parcelz">
-        <activity android:name=".LoginActivity"><intent-filter>
-            <action android:name="android.intent.action.MAIN" />
+        <activity android:name=".Send.Frame_D_Details"></activity>
+        <activity android:name=".LoginActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
 
-            <category android:name="android.intent.category.LAUNCHER" />
-        </intent-filter></activity>
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
 
         <meta-data
             android:name="com.google.android.gms.version"
@@ -35,12 +38,10 @@
             android:name="com.google.android.geo.API_KEY"
             android:value="AIzaSyAYmVtQzJAoAGwrGmBsQHiBf9pyTTCBun4" />
 
-        <activity android:name=".Send.Frame_C_Details"></activity>
-        <activity android:name=".MainFrame"></activity>
+        <activity android:name=".Send.Frame_C_Details" />
+        <activity android:name=".MainFrame" />
         <activity android:name=".OTP" />
-        <activity android:name=".MainActivity">
-
-        </activity>
+        <activity android:name=".MainActivity"></activity>
         <activity android:name=".Send.Frame_B_Details" />
         <activity android:name=".Send.Frame_A_Details" />
     </application>

@@ -12,37 +12,8 @@ public class DetailsFrameA {
     double Latitude_destination;
     double Longitude_destination;
     String UID;
-
-    public DetailsFrameA(String title, String h, String w, String l, String type, String description, double latitude,
-                         double longitude, double latitude_destination, double longitude_destination, String UID) {
-        Title = title;
-        H = h;
-        W = w;
-        L = l;
-        Type = type;
-        Description = description;
-        Latitude = latitude;
-        Longitude = longitude;
-        Latitude_destination = latitude_destination;
-        Longitude_destination = longitude_destination;
-        this.UID = UID;
-    }
-
-    public double getLatitude_destination() {
-        return Latitude_destination;
-    }
-
-    public void setLatitude_destination(double latitude_destination) {
-        Latitude_destination = latitude_destination;
-    }
-
-    public double getLongitude_destination() {
-        return Longitude_destination;
-    }
-
-    public void setLongitude_destination(double longitude_destination) {
-        Longitude_destination = longitude_destination;
-    }
+    String Willaya;
+    String Baladia;
 
     public String getTitle() {
         return Title;
@@ -108,6 +79,22 @@ public class DetailsFrameA {
         Longitude = longitude;
     }
 
+    public double getLatitude_destination() {
+        return Latitude_destination;
+    }
+
+    public void setLatitude_destination(double latitude_destination) {
+        Latitude_destination = latitude_destination;
+    }
+
+    public double getLongitude_destination() {
+        return Longitude_destination;
+    }
+
+    public void setLongitude_destination(double longitude_destination) {
+        Longitude_destination = longitude_destination;
+    }
+
     public String getUID() {
         return UID;
     }
@@ -116,4 +103,35 @@ public class DetailsFrameA {
         this.UID = UID;
     }
 
+    public String getWillaya() {
+        return Willaya;
+    }
+
+    public void setWillaya(String willaya) {
+        Willaya = willaya;
+    }
+
+    public String getBaladia() {
+        return Baladia;
+    }
+
+    public void setBaladia(String baladia) {
+        Baladia = baladia;
+    }
+
+    public DetailsFrameA(String title, String h, String w, String l, String type, String description, double latitude, double longitude, double latitude_destination, double longitude_destination, String UID, String willaya, String baladia) {
+        Title = title;
+        H = h;
+        W = w;
+        L = l;
+        Type = type;
+        Description = description;
+        Latitude = latitude;
+        Longitude = longitude;
+        Latitude_destination = latitude_destination;
+        Longitude_destination = longitude_destination;
+        this.UID = UID;
+        Willaya = willaya;
+        Baladia = baladia;
+    }
 }

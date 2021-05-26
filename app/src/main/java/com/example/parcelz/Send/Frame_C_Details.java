@@ -51,10 +51,12 @@ import com.google.firebase.database.ValueEventListener;
 import com.shuhart.stepview.StepView;
 
 import java.util.List;
+import java.util.Locale;
 
 
 public class Frame_C_Details extends AppCompatActivity
         implements OnMapReadyCallback {
+    double Lat, Lang;
     String Key = "";
     private static final String TAG = Frame_C_Details.class.getSimpleName();
     private GoogleMap map;
@@ -76,7 +78,6 @@ public class Frame_C_Details extends AppCompatActivity
     // The geographical location where the device is currently located. That is, the last-known
     // location retrieved by the Fused Location Provider.
     private Location lastKnownLocation;
-    double Lat, Lang;
     // Keys for storing activity state.
     private static final String KEY_CAMERA_POSITION = "camera_position";
     private static final String KEY_LOCATION = "location";
@@ -88,12 +89,15 @@ public class Frame_C_Details extends AppCompatActivity
     private List[] likelyPlaceAttributions;
     private LatLng[] likelyPlaceLatLngs;
     StepView stepView;
+    double LATT, LONGG;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_frame_cdetails);
         stepView = findViewById(R.id.spb);
+        LATT = getIntent().getDoubleExtra("LATT", 0.0);
+        LONGG = getIntent().getDoubleExtra("LONGG", 0.0);
         // Retrieve location and camera position from saved instance state.
         if (savedInstanceState != null) {
             lastKnownLocation = savedInstanceState.getParcelable(KEY_LOCATION);
@@ -156,33 +160,18 @@ public class Frame_C_Details extends AppCompatActivity
      * Manipulates the map when it's available.
      * This callback is triggered when the map is ready to be used.
      */
+    String StreetAddress;
+    String x;
+    String y;
+    String z;
+    String w;
+
     @Override
     public void onMapReady(GoogleMap map) {
         this.map = map;
         getLocationPermission();
         updateLocationUI();
         getDeviceLocation();
-        // Use a custom info window adapter to handle multiple lines of text in the
-        // info window contents.
-       /* this.map.setInfoWindowAdapter(new GoogleMap.InfoWindowAdapter() {
-
-            @Override
-            public View getInfoWindow(Marker marker) {
-                return null;
-            }
-
-            @Override
-            public View getInfoContents(Marker marker) {
-                // Inflate the layouts for the info window, title and snippet.
-                View infoWindow = getLayoutInflater().inflate(R.layout.activity_frame_cdetails,
-                        (FrameLayout) findViewById(R.id.google_map), false);
-
-                TextView title = infoWindow.findViewById(R.id.title);
-                title.setText(marker.getTitle());
-
-                return infoWindow;
-            }
-        });*/
         LatLng sydney = new LatLng(-33.852, 151.211);
         map.addMarker(new MarkerOptions()
                 .position(sydney)
@@ -208,10 +197,19 @@ public class Frame_C_Details extends AppCompatActivity
                 map.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 10));
                 map.addMarker(markerOptions);
                 try {
+                    Lat = latLng.latitude;
+                    Lang = latLng.longitude;
                     List<Address> addresses = geocoder.getFromLocation(latLng.latitude, latLng.longitude, 1);
                     if (addresses.size() > 0) {
                         Address address = addresses.get(0);
-                        String StreetAddress = address.getAddressLine(0);
+                        StreetAddress = address.getAddressLine(0);
+                        x = address.getAddressLine(0);
+                        y = address.getLocality();
+                        z = address.getAdminArea();
+                        w = address.getSubLocality();
+                        Toast.makeText(Frame_C_Details.this,
+                                "AAAAA:" + x + "\n" + y + "\n" + z + "\n" + w,
+                                Toast.LENGTH_SHORT).show();
                         map.addMarker(new MarkerOptions().position(latLng).title(StreetAddress));
                     }
                 } catch (Exception r) {
@@ -387,18 +385,93 @@ public class Frame_C_Details extends AppCompatActivity
     }
 
     private void updateLocation() {
+
         DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference();
         rootRef.child("Send_Details_A")
                 .child(Key)
-                .child("latitude")
+                .child("latitude_destination")
                 .setValue(Lat);
         rootRef.child("Send_Details_A")
                 .child(Key)
-                .child("longitude")
+                .child("longitude_destination")
                 .setValue(Lang);
+        try {
+            Geocoder gcd = new Geocoder(this, Locale.getDefault());
+            List<Address> addresses = gcd.getFromLocation(Lat, Lang, 1);
+            if (addresses.size() > 0) {
+
+                String locality = addresses.get(0).getLocality(); // If any additional address line present than only, check with max available address lines by getMaxAddressLineIndex()
+                String subLocality = addresses.get(0).getSubLocality(); // If any additional address line present than only, check with max available address lines by getMaxAddressLineIndex()
+                String address0 = addresses.get(0).getAddressLine(0); // If any additional address line present than only, check with max available address lines by getMaxAddressLineIndex()
+                String address1 = addresses.get(0).getAddressLine(1); // If any additional address line present than only, check with max available address lines by getMaxAddressLineIndex()
+                String address2 = addresses.get(0).getAddressLine(2); // If any additional address line present than only, check with max available address lines by getMaxAddressLineIndex()
+                String city = addresses.get(0).getLocality();
+                String state = addresses.get(0).getAdminArea();
+                String country = addresses.get(0).getCountryName();
+                String postalCode = addresses.get(0).getPostalCode();
+                String knownName = addresses.get(0).getFeatureName();
+
+                rootRef.child("Send_Details_A")
+                        .child(Key)
+                        .child("willaya")
+                        .setValue(state);
+                rootRef.child("Send_Details_A")
+                        .child(Key)
+                        .child("baladia")
+                        .setValue(locality);
+            } else {
+                // do your stuff
+            }
+        } catch (Exception e) {
+
+        }
+
         Toast.makeText(Frame_C_Details.this, "Update LATLANG AVEC Success", Toast.LENGTH_SHORT).show();
     }
 
     public void Next(View view) {
+        try {
+            Geocoder gcd = new Geocoder(this, Locale.getDefault());
+            List<Address> addresses = gcd.getFromLocation(Lat, Lang, 1);
+            if (addresses.size() > 0) {
+
+                String locality = addresses.get(0).getLocality(); // If any additional address line present than only, check with max available address lines by getMaxAddressLineIndex()
+                String subLocality = addresses.get(0).getSubLocality(); // If any additional address line present than only, check with max available address lines by getMaxAddressLineIndex()
+                String address0 = addresses.get(0).getAddressLine(0); // If any additional address line present than only, check with max available address lines by getMaxAddressLineIndex()
+                String address1 = addresses.get(0).getAddressLine(1); // If any additional address line present than only, check with max available address lines by getMaxAddressLineIndex()
+                String address2 = addresses.get(0).getAddressLine(2); // If any additional address line present than only, check with max available address lines by getMaxAddressLineIndex()
+                String city = addresses.get(0).getLocality();
+                String state = addresses.get(0).getAdminArea();
+                String country = addresses.get(0).getCountryName();
+                String postalCode = addresses.get(0).getPostalCode();
+                String knownName = addresses.get(0).getFeatureName();
+
+
+                System.out.println("xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx 1" + locality);//baladia
+                System.out.println("xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx 2" + subLocality);//street name big
+                System.out.println("xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx 3" + address0);//rue name
+                System.out.println("xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx 4" + address1);
+                System.out.println("xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx 5" + address2);
+                System.out.println("xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx 6" + city);//baladia
+                System.out.println("xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx 7" + state);//willaya province
+                System.out.println("xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx 8" + country);//algeria
+                System.out.println("xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx 9" + postalCode);
+                System.out.println("xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx 0" + knownName);
+
+                System.out.println("AAAAAAAAAAAAAAAA " + x + "AAAAAAAAAAAAAAAA " + y + "AAAAAAAAAAAAAAAA " + z + "AAAAAAAAAAAAAAAA " + w);
+            } else {
+                // do your stuff
+            }
+        } catch (Exception e) {
+        }
+        updateLocation();
+        Intent mainI = new Intent(Frame_C_Details.this, Frame_D_Details.class);
+        mainI.putExtra("LATTDEST", Lat);
+        mainI.putExtra("LONGGDEST", Lang);
+        mainI.putExtra("LATT", LATT);
+        mainI.putExtra("LONGG", LONGG);
+        startActivity(mainI);
+        finish();
+
     }
 }
