@@ -103,13 +103,15 @@ public class Frame_D_Details extends AppCompatActivity {
         });
     }
 
+    double xxxxx = (double) 0.0;
+
     private void calcDistance() {
         LatLng sydney = new LatLng(LATT, LONGG);
         LatLng Brisbane = new LatLng(LATTDEST, LONGGDEST);
         Double distance, distance2;
         distance = SphericalUtil.computeDistanceBetween(sydney, Brisbane);
         distance2 = SphericalUtil.computeDistanceBetween(Brisbane, sydney);
-
+        xxxxx = distance / 1000;
         System.out.println("OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO>>>>> : " + String.format("%.2f", distance / 1000));
         System.out.println("OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO>>>>> : " + String.format("%.2f", distance2 / 1000));
     }

@@ -173,27 +173,7 @@ public class Frame_B_Details extends AppCompatActivity implements OnMapReadyCall
         showCurrentPlace();
         map.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(Lat, Lang), 15));
 
-        this.map.setInfoWindowAdapter(new GoogleMap.InfoWindowAdapter() {
-            @Override
-            public View getInfoWindow(Marker marker) {
-                return null;
-            }
 
-            @Override
-            public View getInfoContents(Marker marker) {
-                // Inflate the layouts for the info window, title and snippet.
-                View infoWindow = getLayoutInflater().inflate(R.layout.activity_frame_cdetails,
-                        (FrameLayout) findViewById(R.id.google_map), false);
-                TextView title = infoWindow.findViewById(R.id.title);
-                title.setText(marker.getTitle());
-                return infoWindow;
-            }
-        });
-        LatLng sydney = new LatLng(-33.852, 151.211);
-        map.addMarker(new MarkerOptions()
-                .position(sydney)
-                .title("Marker in Sydney"));
-        map.moveCamera(CameraUpdateFactory.newLatLng(sydney));
         map.setMyLocationEnabled(true);
         map.animateCamera(CameraUpdateFactory.zoomIn());
         map.animateCamera(CameraUpdateFactory.zoomOut());
