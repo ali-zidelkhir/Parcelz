@@ -52,6 +52,8 @@ import com.shuhart.stepview.StepView;
 
 import org.jetbrains.annotations.NotNull;
 
+import java.lang.reflect.Type;
+import java.sql.Timestamp;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -95,9 +97,15 @@ public class Frame_B_Details extends AppCompatActivity implements OnMapReadyCall
     final FirebaseDatabase database = FirebaseDatabase.getInstance();
     DatabaseReference databaseReference;
     String Key = "";
+    double Lat, Lang;
+    Geocoder geocoder;
+
+
+    double LATT, LONGG;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_frame_bdetails);
         stepView = findViewById(R.id.spb);
@@ -115,7 +123,7 @@ public class Frame_B_Details extends AppCompatActivity implements OnMapReadyCall
             lastKnownLocation = savedInstanceState.getParcelable(KEY_LOCATION);
             cameraPosition = savedInstanceState.getParcelable(KEY_CAMERA_POSITION);
         }
-
+        //getLocationPermission();
         // Construct a FusedLocationProviderClient.
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
 
@@ -150,9 +158,24 @@ public class Frame_B_Details extends AppCompatActivity implements OnMapReadyCall
             }
         });
 
+        Title = getIntent().getStringExtra("Title");
+        H = getIntent().getStringExtra("H");
+        W = getIntent().getStringExtra("W");
+        L = getIntent().getStringExtra("L");
+        Description = getIntent().getStringExtra("Description");
+        Type = getIntent().getStringExtra("Type");
     }
 
-
+    String Title, H, L, W, Description, Type;
+    /**
+     * Manipulates the map when it's available.
+     * This callback is triggered when the map is ready to be used.
+     */
+    String StreetAddress;
+    String x;
+    String y;
+    String z;
+    String w;
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         if (map != null) {
@@ -169,14 +192,54 @@ public class Frame_B_Details extends AppCompatActivity implements OnMapReadyCall
         getLocationPermission();
         updateLocationUI();
         getDeviceLocation();
-        getLocation();
-        showCurrentPlace();
-        map.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(Lat, Lang), 15));
-
-
-        map.setMyLocationEnabled(true);
+        LatLng sydney = new LatLng(-33.852, 151.211);
+        map.addMarker(new MarkerOptions()
+                .position(sydney)
+                .title("Marker in Sydney"));
+        map.moveCamera(CameraUpdateFactory.newLatLng(sydney));
+        // Prompt the user for permission.
         map.animateCamera(CameraUpdateFactory.zoomIn());
         map.animateCamera(CameraUpdateFactory.zoomOut());
+        try {
+            map.moveCamera(CameraUpdateFactory.newLatLngZoom(
+                    new LatLng(lastKnownLocation.getLatitude(),
+                            lastKnownLocation.getLongitude()), DEFAULT_ZOOM));
+        } catch (Exception e) {
+
+        }
+        map.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
+            @Override
+            public void onMapClick(LatLng latLng) {
+                MarkerOptions markerOptions = new MarkerOptions();
+                markerOptions.position(latLng);
+                //markerOptions.title(latLng.latitude + " : " + latLng.longitude);
+                map.clear();
+                map.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 10));
+                map.addMarker(markerOptions);
+                try {
+                    Lat = latLng.latitude;
+                    Lang = latLng.longitude;
+                    List<Address> addresses = geocoder.getFromLocation(latLng.latitude, latLng.longitude, 1);
+                    if (addresses.size() > 0) {
+                        Address address = addresses.get(0);
+                        StreetAddress = address.getAddressLine(0);
+                        x = address.getAddressLine(0);
+                        y = address.getLocality();
+                        z = address.getAdminArea();
+                        w = address.getSubLocality();
+                        Toast.makeText(Frame_B_Details.this,
+                                "AAAAA:" + x + "\n" + y + "\n" + z + "\n" + w,
+                                Toast.LENGTH_SHORT).show();
+
+                        map.addMarker(new MarkerOptions().position(latLng).title(StreetAddress));
+                    }
+                } catch (Exception r) {
+
+                }
+
+
+            }
+        });
     }
 
     private void getDeviceLocation() {
@@ -317,13 +380,20 @@ public class Frame_B_Details extends AppCompatActivity implements OnMapReadyCall
         handler.postDelayed(new Runnable() {
                                 @Override
                                 public void run() {
-                                    getLocation();
+                                   // getLocation();
                                     insertData();
                                     stepIndex++;
                                     stepView.go(stepIndex, true);
                                     Intent mainI = new Intent(Frame_B_Details.this, Frame_C_Details.class);
                                     mainI.putExtra("LATT", Lat);
                                     mainI.putExtra("LONGG", Lang);
+                                    mainI.putExtra("Key", Key);
+                                    mainI.putExtra("Title", Title );
+                                    mainI.putExtra("H", H );
+                                    mainI.putExtra("L", L );
+                                    mainI.putExtra("W", W );
+                                    mainI.putExtra("Description", Description);
+                                    mainI.putExtra("Type", Type);
                                     startActivity(mainI);
                                     finish();
                                 }
@@ -331,7 +401,6 @@ public class Frame_B_Details extends AppCompatActivity implements OnMapReadyCall
         );
     }
 
-    double Lat, Lang;
 
     @SuppressLint("MissingPermission")
     private void getLocation() {
@@ -349,9 +418,9 @@ public class Frame_B_Details extends AppCompatActivity implements OnMapReadyCall
         Lat = location.getLatitude();
         Lang = location.getLongitude();
         try {
-            Geocoder geocoder = new Geocoder(Frame_B_Details.this, Locale.getDefault());
-            List<Address> addresses = geocoder.getFromLocation(location.getLatitude(), location.getLongitude(), 1);
-            String address = addresses.get(0).getAddressLine(0);
+            //Geocoder geocoder = new Geocoder(Frame_B_Details.this, Locale.getDefault());
+            //List<Address> addresses = geocoder.getFromLocation(location.getLatitude(), location.getLongitude(), 1);
+            //String address = addresses.get(0).getAddressLine(0);
         } catch (Exception e) {
             e.printStackTrace();
         }

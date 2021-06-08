@@ -120,8 +120,10 @@ public class Frame_A_Details extends AppCompatActivity {
                 LT,
                 TypeT,
                 DescriptionT,
-                0, 0, 0, 0,
-                UID, "A", "B"
+                0, 0, 0, 0,0,
+                UID, "A", "B",
+                "Waiting", ".",
+                ".", ".", ".", "."
         );
         databaseReference.push().
 
@@ -155,9 +157,19 @@ public class Frame_A_Details extends AppCompatActivity {
                                     insertData();
                                     stepIndex++;
                                     stepView.go(stepIndex, true);
-
+                                    System.out.println("77777777777777777777777777777777 : "+Key);
+                                    System.out.println("77777777777777777777777777777777 : "+Title.getText().toString());
+                                    System.out.println("77777777777777777777777777777777 : "+H.getText().toString());
+                                    System.out.println("77777777777777777777777777777777 : "+W.getText().toString());
+                                    System.out.println("77777777777777777777777777777777 : "+L.getText().toString());
                                     Intent mainI = new Intent(Frame_A_Details.this, Frame_B_Details.class);
-                                    //mainI.putExtra("Key", Key);
+                                    mainI.putExtra("Key", Key);
+                                    mainI.putExtra("Title", Title.getText().toString());
+                                    mainI.putExtra("H", H.getText().toString());
+                                    mainI.putExtra("L", L.getText().toString());
+                                    mainI.putExtra("W", W.getText().toString());
+                                    mainI.putExtra("Description", Description.getText().toString());
+                                    mainI.putExtra("Type", j_spinner.getSelectedItem().toString());
                                     startActivity(mainI);
                                     finish();
 

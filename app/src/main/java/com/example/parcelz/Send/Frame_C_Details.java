@@ -23,6 +23,8 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.View;
 import android.widget.FrameLayout;
+import android.widget.RadioButton;
+import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -50,6 +52,9 @@ import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.shuhart.stepview.StepView;
 
+import org.jetbrains.annotations.NotNull;
+
+import java.text.DecimalFormat;
 import java.util.List;
 import java.util.Locale;
 
@@ -91,13 +96,14 @@ public class Frame_C_Details extends AppCompatActivity
     StepView stepView;
     double LATT, LONGG;
 
+    RadioButton PriceBase, TimeBase, radioDelivery, radioPickup;
+    TextView days, pricing;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_frame_cdetails);
         stepView = findViewById(R.id.spb);
-        LATT = getIntent().getDoubleExtra("LATT", 0.0);
-        LONGG = getIntent().getDoubleExtra("LONGG", 0.0);
+
         // Retrieve location and camera position from saved instance state.
         if (savedInstanceState != null) {
             lastKnownLocation = savedInstanceState.getParcelable(KEY_LOCATION);
@@ -111,19 +117,11 @@ public class Frame_C_Details extends AppCompatActivity
                                 }
                             }, 0
         );
-        // Retrieve the content view that renders the map.
-
-
-        // Construct a FusedLocationProviderClient.
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
 
-        // Build the map.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.google_map);
         mapFragment.getMapAsync(this);
-// Construct a PlacesClient
-
-        // Construct a FusedLocationProviderClient.
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
 //get Last inserted Key
         databaseReference = FirebaseDatabase.getInstance().getReference().child("Send_Details_A");
@@ -141,7 +139,18 @@ public class Frame_C_Details extends AppCompatActivity
                 throw databaseError.toException();
             }
         });
+        Title = getIntent().getStringExtra("Title");
+        H = getIntent().getStringExtra("H");
+        W = getIntent().getStringExtra("W");
+        L = getIntent().getStringExtra("L");
+        Description = getIntent().getStringExtra("Description");
+        Type = getIntent().getStringExtra("Type");
+        LATT = getIntent().getDoubleExtra("LATT", 0.0);
+        LONGG = getIntent().getDoubleExtra("LONGG", 0.0);
+
     }
+
+    String Title, H, L, W, Description, Type;
 
     /**
      * Saves the state of the map when the activity is paused.
@@ -300,71 +309,6 @@ public class Frame_C_Details extends AppCompatActivity
     }
 
 
-    /**
-     * Prompts the user to select the current place from a list of likely places, and shows the
-     * current place on the map - provided the user has granted location permission.
-     */
-    private void showCurrentPlace() {
-        if (map == null) {
-            return;
-        }
-
-        if (locationPermissionGranted) {
-
-
-        } else {
-            // The user has not granted permission.
-            Log.i(TAG, "The user did not grant location permission.");
-
-            // Add a default marker, because the user hasn't selected a place.
-            map.addMarker(new MarkerOptions()
-                    .title("errrrrrrrrrr")
-                    .position(defaultLocation)
-                    .snippet("hhhhhhhhhhhhhhhhh"));
-
-            // Prompt the user for permission.
-            getLocationPermission();
-        }
-    }
-
-    /**
-     * Displays a form allowing the user to select a place from a list of likely places.
-     */
-    private void openPlacesDialog() {
-        // Ask the user to choose the place where they are now.
-        DialogInterface.OnClickListener listener = new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                // The "which" argument contains the position of the selected item.
-                LatLng markerLatLng = likelyPlaceLatLngs[which];
-                String markerSnippet = likelyPlaceAddresses[which];
-                if (likelyPlaceAttributions[which] != null) {
-                    markerSnippet = markerSnippet + "\n" + likelyPlaceAttributions[which];
-                }
-
-                // Add a marker for the selected place, with an info window
-                // showing information about that place.
-                map.addMarker(new MarkerOptions()
-                        .title(likelyPlaceNames[which])
-                        .position(markerLatLng)
-                        .snippet(markerSnippet));
-
-                // Position the map's camera at the location of the marker.
-                map.moveCamera(CameraUpdateFactory.newLatLngZoom(markerLatLng,
-                        DEFAULT_ZOOM));
-            }
-        };
-
-        // Display the dialog.
-        AlertDialog dialog = new AlertDialog.Builder(this)
-                .setTitle("hawch")
-                .setItems(likelyPlaceNames, listener)
-                .show();
-    }
-
-    /**
-     * Updates the map's UI settings based on whether the user has granted location permission.
-     */
     private void updateLocationUI() {
         if (map == null) {
             return;
@@ -429,8 +373,10 @@ public class Frame_C_Details extends AppCompatActivity
         Toast.makeText(Frame_C_Details.this, "Update LATLANG AVEC Success", Toast.LENGTH_SHORT).show();
     }
 
+    double dist = 0;
+
     public void Next(View view) {
-        try {
+        /*try {
             Geocoder gcd = new Geocoder(this, Locale.getDefault());
             List<Address> addresses = gcd.getFromLocation(Lat, Lang, 1);
             if (addresses.size() > 0) {
@@ -463,13 +409,21 @@ public class Frame_C_Details extends AppCompatActivity
                 // do your stuff
             }
         } catch (Exception e) {
-        }
+        }*/
         updateLocation();
         Intent mainI = new Intent(Frame_C_Details.this, Frame_D_Details.class);
         mainI.putExtra("LATTDEST", Lat);
         mainI.putExtra("LONGGDEST", Lang);
         mainI.putExtra("LATT", LATT);
         mainI.putExtra("LONGG", LONGG);
+        mainI.putExtra("dist", dist);
+        mainI.putExtra("Key", Key);
+        mainI.putExtra("Title", Title );
+        mainI.putExtra("H", H );
+        mainI.putExtra("L", L );
+        mainI.putExtra("W", W );
+        mainI.putExtra("Description", Description);
+        mainI.putExtra("Type", Type);
         startActivity(mainI);
         finish();
 
